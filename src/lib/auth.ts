@@ -13,10 +13,19 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
-      // If there's a callbackUrl, use it, otherwise go to home
+      // If user is already authenticated and trying to access signin, redirect to home
+      if (url.includes("callbackUrl") && url.includes("signin")) {
+        return `${baseUrl}/`;
+      }
+      
+      // If there's a callbackUrl, use it
       if (url.startsWith("/")) return `${baseUrl}${url}`;
+      
+      // If it's the same origin, allow it
       if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
+      
+      // Default to home page
+      return `${baseUrl}/`;
     },
     async session({ session }) {
       return session;

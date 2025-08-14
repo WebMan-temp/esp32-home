@@ -13,6 +13,11 @@ export default withAuth(
           return true;
         }
         
+        // Allow signin page access (will be handled by the page component)
+        if (req.nextUrl.pathname === "/signin") {
+          return true;
+        }
+        
         // Require authentication for main page and API routes
         if (req.nextUrl.pathname === "/" || req.nextUrl.pathname.startsWith("/api/")) {
           return !!token;
@@ -27,6 +32,7 @@ export default withAuth(
 export const config = {
   matcher: [
     "/", // Protect main page
+    "/signin", // Allow access but will handle redirects
     "/api/:path*", // Protect all API routes
   ],
 };
