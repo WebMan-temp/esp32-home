@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Slider } from "@/components/ui/slider";
 
 type State = { relays:number[]; pwm:number; online?:boolean };
 
@@ -11,7 +10,6 @@ export default function Home(){
   const refresh = async()=>{ const r = await fetch("/api/state"); if(r.ok) setS(await r.json()); };
   useEffect(()=>{ refresh(); },[]);
   const setRelay = async(i:number,on:boolean)=>{ await fetch("/api/relay",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({ch:i+1,on:on?1:0})}); refresh(); };
-  const setPwm = async(v:number)=>{ await fetch("/api/pwm",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({value:v})}); setS(x=>({...x,pwm:v})); };
 
   return (
     <main className="min-h-screen p-6 flex justify-center">

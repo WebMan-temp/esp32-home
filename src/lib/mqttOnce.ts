@@ -21,7 +21,7 @@ export async function publishCmd(topic: string, payload: string) {
   c.end(true);
 }
 
-export async function getRetainedState(): Promise<any> {
+export async function getRetainedState(): Promise<Record<string, unknown>> {
   const c = await connectOnce();
   const topic = `home/${DEVICE_ID}/state`;
   return await new Promise((resolve, reject) => {
