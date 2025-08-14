@@ -20,9 +20,9 @@ function connectOnce(): Promise<MqttClient> {
 
   // TLS leniency for testing only
   if (URL.startsWith("wss://")) {
-    (opts as any).wsOptions = { rejectUnauthorized: !INSECURE };
+    (opts as IClientOptions & { wsOptions: { rejectUnauthorized: boolean } }).wsOptions = { rejectUnauthorized: !INSECURE };
   } else if (URL.startsWith("mqtts://")) {
-    (opts as any).rejectUnauthorized = !INSECURE;
+    (opts as IClientOptions & { rejectUnauthorized: boolean }).rejectUnauthorized = !INSECURE;
   }
 
   return new Promise((resolve, reject) => {
@@ -33,7 +33,7 @@ function connectOnce(): Promise<MqttClient> {
     }, 11_000);
 
     c.once("connect", () => { clearTimeout(t); resolve(c); });
-    c.once("error", (e) => { clearTimeout(t); try { c.end(true); } catch {} ; reject(e); });
+    c.once("error", (e: Error) => { clearTimeout(t); try { c.end(true); } catch {} ; reject(e); });
   });
 }
 
@@ -45,7 +45,7 @@ export async function publishCmd(topic: string, payload: string) {
   c.end(true);
 }
 
-export async function getRetainedState(): Promise<any> {
+export async function getRetainedState(): Promise<Record<string, unknown>> {
   const c = await connectOnce();
   const topic = `home/${DEVICE_ID}/state`;
   return await new Promise((resolve, reject) => {
@@ -53,7 +53,7 @@ export async function getRetainedState(): Promise<any> {
     c.subscribe(topic, { qos: 1 }, (err) => {
       if (err) { clearTimeout(to); c.end(true); reject(err); }
     });
-    c.on("message", (t, msg) => {
+    c.on("message", (t: string, msg: Buffer) => {
       if (t === topic) {
         clearTimeout(to);
         try { resolve(JSON.parse(msg.toString())); }
