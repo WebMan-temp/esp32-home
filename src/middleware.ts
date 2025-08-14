@@ -7,9 +7,18 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => {
+      authorized: ({ token, req }) => {
+        // Allow OAuth callback routes
+        if (req.nextUrl.pathname.startsWith("/api/auth")) {
+          return true;
+        }
+        
         // Require authentication for main page and API routes
-        return !!token;
+        if (req.nextUrl.pathname === "/" || req.nextUrl.pathname.startsWith("/api/")) {
+          return !!token;
+        }
+        
+        return true;
       },
     },
   }

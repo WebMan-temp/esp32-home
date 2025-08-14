@@ -1,9 +1,13 @@
 "use client";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export default function Header(){
   const { data: session, status } = useSession();
+  const pathname = usePathname();
+  const isSigninPage = pathname === "/signin";
+  
   return (
     <header className="w-full flex items-center justify-between py-3">
       <div className="font-semibold">ESP32 Home Control</div>
@@ -13,9 +17,9 @@ export default function Header(){
             <span className="text-sm opacity-80">{session?.user?.name || session?.user?.email}</span>
             <Button variant="secondary" onClick={()=>signOut({ callbackUrl: "/signin" })}>Sign out</Button>
           </div>
-        ) : (
+        ) : !isSigninPage ? (
           <Button onClick={()=>signIn()}>Sign in</Button>
-        )}
+        ) : null}
       </div>
     </header>
   );

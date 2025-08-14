@@ -12,9 +12,20 @@ export const authOptions: NextAuthOptions = {
     signIn: "/signin",
   },
   callbacks: {
-    async redirect({ baseUrl }) {
-      // After OAuth, always redirect to home page
-      return `${baseUrl}/`;
+    async redirect({ url, baseUrl }) {
+      // If there's a callbackUrl, use it, otherwise go to home
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
+    async session({ session }) {
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
