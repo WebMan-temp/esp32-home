@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 
 type State = { relays:number[]; pwm:number; online?:boolean };
 
@@ -34,6 +35,7 @@ export default function Home(){
         </CardContent></Card> */}
         <Button variant="secondary" onClick={refresh}>Refresh</Button>
       </div>
+      <PWAInstallPrompt />
     </main>
   );
 }
